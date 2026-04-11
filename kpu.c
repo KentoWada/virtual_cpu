@@ -49,8 +49,52 @@ void execute(KPU *kpu, uint8_t opcode, uint8_t operand1, uint16_t operand2){
 
             break;
         }
+
+        /* TODO: implement proper signed negative detection with two's complement '*/
         case OP_SUB:{
-            uint32_t result = kpu
+            uint32_t result = kpu->reg_arr[operand1] - operand2;
+            if(result > 0xFFFF){
+                kpu->flag_reg |= (1<<2);
+            }
+
+            kpu->reg_arr[operand1] = result & 0xFFFF;
+
+            if(kpu->reg_arr[operand1] == 0x0000){
+                kpu->flag_reg |= (1<<0);
+            }
+
+            break;
+            
+        }
+
+        case OP_MUL:{
+            uint32_t result = kpu->reg_arr[operand1] * operand2;
+            if(result > 0xFFFF){
+                kpu->flag_reg |= (1<<2);
+            }
+
+            kpu->reg_arr[operand1] = result & 0xFFFF;
+
+            if(kpu->reg_arr[operand1] == 0x0000){
+                kpu->flag_reg |= (1<<0);
+            }
+            
+            break;
+        }
+
+        case OP_DIV:{
+            if(operand2 == 0x0000){
+                printf("ERROR: DIVISION BY ZERO.");
+                return;
+            }
+
+            kpu->reg_arr[operand1] /= operand2;
+            
+            if(kpu->reg_arr[operand1] == 0x0000){
+                kpu->flag_reg |= (1<<0);
+            }
+
+            break;
         }
     }
 }
