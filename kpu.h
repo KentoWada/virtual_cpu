@@ -20,6 +20,7 @@ typedef enum{
     OP_MUL,
     OP_DIV,
     OP_MOVE,
+    OP_LOADI,
     OP_LOAD, 
     OP_STORE,
     OP_JMP,

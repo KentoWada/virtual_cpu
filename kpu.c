@@ -96,6 +96,45 @@ void execute(KPU *kpu, uint8_t opcode, uint8_t operand1, uint16_t operand2){
 
             break;
         }
+
+        case OP_MOVE:{
+            uint8_t reg_src = (operand2 >> 8) & 0xFF;
+            if(reg_src >= REG_COUNT){
+                printf("ERROR: Invalid register.\n");
+                return;
+            }
+            uint8_t reg_dst = operand1;
+
+            kpu->reg_arr[reg_dst] = kpu->reg_arr[reg_src];
+            break;
+        }
+
+        case OP_LOADI:{
+            kpu->reg_arr[operand1] = operand2;
+            break;
+        }
+
+        case OP_LOAD:{
+           if(operand2 >= MEMORY_SIZE - 1){
+                printf("ERROR: Memory access out of bounds.\n");
+                return;
+           }
+            uint16_t value = kpu->memory_arr[operand2] | (kpu->memory_arr[operand2+1]);
+            kpu->reg_arr[operand1] =  value;
+            break;
+        }
+
+        case OP_STORE:{
+            if(operand2 >= MEMORY_SIZE - 1){
+                printf("ERROR: Memory access out of bounds.\n");
+                return;
+            }
+            uint8_t high_byte = (kpu->reg_arr[operand1] >> 8) & 0xFF;
+            uint8_t low_byte = (kpu->reg_arr[operand1] >> 0) & 0x00FF;
+            kpu->memory_arr[operand2] = low_byte;
+            kpu->memory_arr[operand2+1] = high_byte;
+            break;
+        }
     }
 }
 
